@@ -1,0 +1,25 @@
+name: 'Setup Workflow'
+description: 'A composite action to setup the common steps in the workflow'
+
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Setup DVC
+      uses: iterative/setup-dvc@v1
+    - run: git submodule update --init --recursive
+      shell: bash
+    - run: yarn install --production=false
+      shell: bash
+    - run: yarn fetch:fixtures
+      shell: bash
+    - run: yarn build
+      shell: bash
